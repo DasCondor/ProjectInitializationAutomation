@@ -6,12 +6,14 @@ cd /d %~dp0
 
 If "%1"=="" (
     echo "error"
-) else ( 
+) else (
     if "%2"=="" (
-        python remote.py %fn% %flag%
-        ) else (
-            if "%2"=="l" (
-                python local.py %fn%
-            )
-        )
+        python remote.py %fn% github
+    ) else if "%2"=="a" (
+        python remote.py %fn% azure
+    ) else if "%2"=="l" (
+        python local.py %fn%
+    ) else (
+        echo "create <project_name> [a|l]"
     )
+)
