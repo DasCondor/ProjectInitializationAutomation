@@ -36,4 +36,37 @@ FILEPATH="/path/to/your/project/"
 - Create the token under *User settings > Personal access tokens* with the **Code: Read, write & manage** scope.
 - The push uses SSH, so add your public key under *User settings > SSH public keys*.
 
-Windows users: see [windows_OS](windows_OS/README.md).
+Windows users: see [windows_OS](windows_OS/README.md), or use the PowerShell version below.
+
+## PowerShell profile functions
+
+`ProjectInit.ps1` is a standalone port (no Python) with project templates. Add it to your profile:
+```powershell
+Add-Content $PROFILE '. "C:\path\to\ProjectInitializationAutomation\ProjectInit.ps1"'
+```
+
+### One-time setup:
+```powershell
+Set-ProjectConfig -ProjectsFolder C:\dev -Provider github   # github | azure | local
+Set-TemplateFolder C:\dev\_templates                        # default: ~\ProjectTemplates
+Set-ProjectConfig -AzureOrg your-organization -AzureProject "Your Project"   # only for azure
+```
+Settings are saved in `~\.projectinit.json`. Tokens are never saved there; they are read from:
+- GitHub: `$env:GITHUB_TOKEN`, or the GitHub CLI if you are signed in with `gh auth login`
+- Azure DevOps: `$env:AZURE_PAT`
+
+### Templates:
+```powershell
+New-Template python -From C:\dev\some-project   # copy an existing folder (its .git is left out)
+New-Template blank                              # empty template folder to fill in yourself
+Get-Template                                    # list templates
+```
+
+### Create a project:
+```powershell
+create my-app                    # alias for New-Project
+create my-app python             # start from the "python" template
+create my-app -Provider azure    # override the default provider once
+create my-app -Provider local    # no remote repo
+```
+This creates the remote repo, copies the template into `<ProjectsFolder>\my-app`, commits, pushes over HTTPS, and opens VS Code (`-NoOpen` to skip).
